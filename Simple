@@ -1,0 +1,50 @@
+def se(times, pop=500, wealth=100, amount=1):
+    """times is the number of thick
+       pop is the population
+       wealth is the starting wealth
+       amount is the transaction amount btw agents"""
+    import numpy as np
+    import random as random
+    import matplotlib.pyplot as plt
+    n=[wealth]*pop
+    sumrichlist=[]
+    sumpoorlist=[]
+    for i in range(times):
+        nop=[] #Not poor 
+        for e in n:
+            if e>amount-1:
+                nop.append(e)
+        mp=len(nop) #Money Pool
+        n=np.array(n)
+        n=np.where(n>amount-1,n-amount,n)
+        n=list(n)
+        for luck in range(mp):
+            lucky=random.choice(n)
+            n.remove(lucky)
+            lucky+=amount
+            n.append(lucky)
+        n.sort()
+        sumn=sum(n)
+        sumr=sum(n[round(9/10*len(n)):len(n)+1])
+        sump=sum(n[0:round(len(n)/2)+1])
+        sumrich=sumr/sumn
+        sumrichlist.append(sumrich)
+        sumpoor=sump/sumn
+        sumpoorlist.append(sumpoor)
+    plt.figure()
+    plt.subplot(1,2,1)
+    plt.hist(data=n,x=n[:])
+    #plt.title("Economy Model with "+ str(times) +" ticks, "+ str(pop)+" pop.,\n "+ str(wealth)+" starting wealth and " +str(amount)+ " amount unit exchange.")
+    plt.xlabel("Wealth")
+    plt.ylabel("Number of People")
+    plt.subplot(1,2,2)
+    plt.plot(sumrichlist, label="Rich")
+    plt.legend(loc="upper right")
+    plt.plot(sumpoorlist, label="Poor")
+    plt.legend(loc="upper right")
+    plt.xlabel("Number of Ticks")
+    plt.ylabel("Percentage")
+    plt.tight_layout()    
+    plt.savefig('Economy Model Simple Plots.png', dpi=500)
+    plt.show()
+    print(n)
