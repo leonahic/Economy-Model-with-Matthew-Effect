@@ -1,0 +1,77 @@
+def se(times, pop=500, wealth=100, amount=1, debt=False):
+    """times is the number of ticks
+       pop is the number of agent
+       wealth is the starting wealth for each agent
+       amount is the transaction amount between agents
+       debt is the buying credit option for the poor agents"""
+    import numpy as np
+    import matplotlib.pyplot as plt
+    n=[wealth]*pop
+    sumrichlist=[]
+    sumpoorlist=[]
+    for i in range(times):
+        nop=[] #For debt=False
+        debtp=[] #For debt=True
+        n.sort()
+        sumn=sum(n)
+        sumr=sum(n[round(9/10*len(n)):len(n)+1])
+        sump=sum(n[0:round(len(n)/2)+1])
+        sumrich=sumr/sumn
+        sumrichlist.append(sumrich)
+        sumpoor=sump/sumn
+        sumpoorlist.append(sumpoor)
+        if debt==False:
+            for e in n:
+                if e>amount-1:
+                    nop.append(e)
+            mp=len(nop) #Money Pool
+            n=np.array(n)
+            n=np.where(n>amount-1,n-amount,n)
+            n=list(n)
+        else:
+            for d in n:
+                debtp.append(d)
+            mp=len(debtp)
+            n=np.array(n)
+            n-=amount
+            n=list(n)
+        for luck in range(mp):
+            n.sort()
+            lucky=np.random.choice([n[round(9/10*len(n)):len(n)+1],n[0:round(9/10*len(n))+1]],1,p=[0.11,0.89])
+            lucky1=np.random.choice(np.random.choice(lucky))
+            n.remove(lucky1)
+            lucky1+=amount
+            n.append(lucky1)
+            n.sort()
+    sumn=sum(n) #To observe last 
+    sumr=sum(n[round(9/10*len(n)):len(n)+1])
+    sump=sum(n[0:round(len(n)/2)+1])
+    sumrich=sumr/sumn
+    sumrichlist.append(sumrich)
+    sumpoor=sump/sumn
+    sumpoorlist.append(sumpoor)
+    if debt==True:
+        totaldebt=[]
+        for m in n:
+            if m<0:
+                totaldebt.append(m)
+        tda=sum(totaldebt)
+        tda*=-1
+        print("In this model people buy credit and total amount of debt is: "+ str(tda))
+    plt.figure(figsize=(15,5))
+    plt.subplot(1,2,1)
+    plt.hist(data=n,x=n,histtype = 'bar',bins=20)
+    plt.title("Economy Model with "+ str(times) +" ticks, "+ str(pop)+" population, "+ str(wealth)+" starting wealth and " +str(amount)+ " amount(s) of unit exchange.")
+    plt.xlabel("Wealth")
+    plt.ylabel("Number of People")
+    plt.subplot(1,2,2)
+    plt.plot(sumrichlist, label="Rich")
+    plt.legend(loc="upper right")
+    plt.plot(sumpoorlist, label="Poor")
+    plt.legend(loc="upper right")
+    plt.xlabel("Number of Ticks")
+    plt.ylabel("Percentage")
+    plt.tight_layout()    
+    plt.savefig('Economy Model with Matthew Effect Plots.png', dpi=500)
+    plt.show()   
+    #print(n)       #You can delete the first '#' to see agent's final situation
